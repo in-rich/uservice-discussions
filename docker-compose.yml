@@ -1,0 +1,13 @@
+services:
+  postgres-discussions:
+    image: postgres:14-alpine
+    ports:
+      - 1601:5432
+    volumes:
+      - uservice_discussions_postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+volumes:
+  uservice_discussions_postgres:
