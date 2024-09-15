@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"strings"
 )
 
 type CreateMessageHandler struct {
@@ -22,7 +23,7 @@ func (h *CreateMessageHandler) CreateMessage(ctx context.Context, in *discussion
 		PublicIdentifier: in.GetPublicIdentifier(),
 		AuthorID:         in.GetAuthorId(),
 		TeamID:           in.GetTeamId(),
-		Content:          in.GetContent(),
+		Content:          strings.TrimSpace(in.GetContent()),
 	})
 	if err != nil {
 		if errors.Is(err, services.ErrInvalidData) {

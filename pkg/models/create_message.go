@@ -5,5 +5,5 @@ type CreateMessageRequest struct {
 	PublicIdentifier string `json:"publicIdentifier" validate:"required,max=255"`
 	AuthorID         string `json:"authorID" validate:"required,max=255"`
 	TeamID           string `json:"teamID" validate:"required,max=255"`
-	Content          string `json:"content" validate:"max=15000"`
+	Content          string `json:"content" validate:"required,max=15000"`
 }
