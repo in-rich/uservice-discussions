@@ -1,37 +1,20 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/in-rich/lib-go/deploy"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/config"
 	"github.com/in-rich/uservice-discussions/migrations"
 	"github.com/in-rich/uservice-discussions/pkg/dao"
 	"github.com/in-rich/uservice-discussions/pkg/handlers"
 	"github.com/in-rich/uservice-discussions/pkg/services"
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/driver/pgdriver"
-	"google.golang.org/grpc"
 	"log"
-	"net"
-	"time"
 )
 
 func main() {
-	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(config.App.Postgres.DSN)))
-	db := bun.NewDB(sqldb, pgdialect.New())
-
-	defer func() {
-		_ = db.Close()
-		_ = sqldb.Close()
-	}()
-
-	err := db.Ping()
-	for i := 0; i < 10 && err != nil; i++ {
-		time.Sleep(1 * time.Second)
-		err = db.Ping()
-	}
+	db, closeDB := deploy.OpenDB(config.App.Postgres.DSN)
+	defer closeDB()
 
 	if err := migrations.Migrate(db); err != nil {
 		log.Fatalf("failed to migrate: %v", err)
@@ -61,17 +44,8 @@ func main() {
 	listDiscussionsByTeamHandler := handlers.NewListDiscussionsByTeamHandler(listDiscussionsByTeamService)
 	updateDiscussionReadStatusHandler := handlers.NewUpdateDiscussionReadStatusHandler(updateDiscussionReadStatusService)
 
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", config.App.Server.Port))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	server := grpc.NewServer()
-
-	defer func() {
-		server.GracefulStop()
-		_ = listener.Close()
-	}()
+	listener, server := deploy.StartGRPCServer(fmt.Sprintf(":%d", config.App.Server.Port), "discussions")
+	defer deploy.CloseGRPCServer(listener, server)
 
 	discussions_pb.RegisterCreateMessageServer(server, createMessageHandler)
 	discussions_pb.RegisterDeleteMessageServer(server, deleteMessageHandler)
