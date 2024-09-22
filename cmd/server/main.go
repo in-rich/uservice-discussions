@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/in-rich/lib-go/deploy"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/config"
@@ -13,9 +12,14 @@ import (
 )
 
 func main() {
-	db, closeDB := deploy.OpenDB(config.App.Postgres.DSN)
+	log.Println("Starting server")
+	db, closeDB, err := deploy.OpenDB(config.App.Postgres.DSN)
+	if err != nil {
+		log.Fatalf("failed to connect to database: %v", err)
+	}
 	defer closeDB()
 
+	log.Println("Running migrations")
 	if err := migrations.Migrate(db); err != nil {
 		log.Fatalf("failed to migrate: %v", err)
 	}
@@ -44,8 +48,10 @@ func main() {
 	listDiscussionsByTeamHandler := handlers.NewListDiscussionsByTeamHandler(listDiscussionsByTeamService)
 	updateDiscussionReadStatusHandler := handlers.NewUpdateDiscussionReadStatusHandler(updateDiscussionReadStatusService)
 
-	listener, server := deploy.StartGRPCServer(fmt.Sprintf(":%d", config.App.Server.Port), "discussions")
+	log.Println("Starting to listen on port", config.App.Server.Port)
+	listener, server, health := deploy.StartGRPCServer(config.App.Server.Port)
 	defer deploy.CloseGRPCServer(listener, server)
+	go health()
 
 	discussions_pb.RegisterCreateMessageServer(server, createMessageHandler)
 	discussions_pb.RegisterDeleteMessageServer(server, deleteMessageHandler)
@@ -55,6 +61,7 @@ func main() {
 	discussions_pb.RegisterListDiscussionsByTeamServer(server, listDiscussionsByTeamHandler)
 	discussions_pb.RegisterUpdateDiscussionReadStatusServer(server, updateDiscussionReadStatusHandler)
 
+	log.Println("Server started")
 	if err := server.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
