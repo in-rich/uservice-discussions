@@ -24,6 +24,21 @@ func main() {
 		log.Fatalf("failed to migrate: %v", err)
 	}
 
+	depCheck := func() map[string]bool {
+		errDB := db.Ping()
+
+		return map[string]bool{
+			"CreateMessage":              errDB == nil,
+			"DeleteMessage":              errDB == nil,
+			"GetDiscussionReadStatus":    errDB == nil,
+			"GetMessage":                 errDB == nil,
+			"ListDiscussionMessages":     errDB == nil,
+			"ListDiscussionsByTeam":      errDB == nil,
+			"UpdateDiscussionReadStatus": errDB == nil,
+			"":                           errDB == nil,
+		}
+	}
+
 	createMessageDAO := dao.NewCreateMessageRepository(db)
 	deleteMessageDAO := dao.NewDeleteMessageRepository(db)
 	getDiscussionReadStatusDAO := dao.NewGetDiscussionReadStatusRepository(db)
@@ -49,7 +64,7 @@ func main() {
 	updateDiscussionReadStatusHandler := handlers.NewUpdateDiscussionReadStatusHandler(updateDiscussionReadStatusService)
 
 	log.Println("Starting to listen on port", config.App.Server.Port)
-	listener, server, health := deploy.StartGRPCServer(config.App.Server.Port)
+	listener, server, health := deploy.StartGRPCServer(config.App.Server.Port, depCheck)
 	defer deploy.CloseGRPCServer(listener, server)
 	go health()
 
