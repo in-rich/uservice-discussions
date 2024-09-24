@@ -90,6 +90,7 @@ jobs:
     env:
       PORT: 1600
       GOPRIVATE: github.com/in-rich/*
+      DSN: "postgres://postgres:postgres@localhost:1601/postgres?sslmode=disable"
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository }}/${{ github.head_ref || github.ref_name }}
     steps:
@@ -125,6 +126,8 @@ jobs:
         id: local_container
         run: |
           docker run -d \
+            -e PORT=$PORT \
+            -e DSN="$DSN" \
             -p $PORT:$PORT --network="host" \
             --name uservice-container \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test
