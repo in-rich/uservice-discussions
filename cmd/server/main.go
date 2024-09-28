@@ -24,19 +24,21 @@ func main() {
 		log.Fatalf("failed to migrate: %v", err)
 	}
 
-	depCheck := func() map[string]bool {
-		errDB := db.Ping()
-
-		return map[string]bool{
-			"CreateMessage":              errDB == nil,
-			"DeleteMessage":              errDB == nil,
-			"GetDiscussionReadStatus":    errDB == nil,
-			"GetMessage":                 errDB == nil,
-			"ListDiscussionMessages":     errDB == nil,
-			"ListDiscussionsByTeam":      errDB == nil,
-			"UpdateDiscussionReadStatus": errDB == nil,
-			"":                           errDB == nil,
-		}
+	depCheck := deploy.DepsCheck{
+		Dependencies: func() map[string]error {
+			return map[string]error{
+				"Postgres": db.Ping(),
+			}
+		},
+		Services: deploy.DepCheckServices{
+			"CreateMessage":              {"Postgres"},
+			"DeleteMessage":              {"Postgres"},
+			"GetDiscussionReadStatus":    {"Postgres"},
+			"GetMessage":                 {"Postgres"},
+			"ListDiscussionMessages":     {"Postgres"},
+			"ListDiscussionsByTeam":      {"Postgres"},
+			"UpdateDiscussionReadStatus": {"Postgres"},
+		},
 	}
 
 	createMessageDAO := dao.NewCreateMessageRepository(db)
