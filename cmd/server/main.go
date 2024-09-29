@@ -1,27 +1,40 @@
 package main
 
 import (
+	"fmt"
 	"github.com/in-rich/lib-go/deploy"
+	"github.com/in-rich/lib-go/monitor"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/config"
 	"github.com/in-rich/uservice-discussions/migrations"
 	"github.com/in-rich/uservice-discussions/pkg/dao"
 	"github.com/in-rich/uservice-discussions/pkg/handlers"
 	"github.com/in-rich/uservice-discussions/pkg/services"
-	"log"
+	"github.com/rs/zerolog"
+	"os"
 )
 
+func getLogger() monitor.GRPCLogger {
+	if deploy.IsReleaseEnv() {
+		return monitor.NewGCPGRPCLogger(zerolog.New(os.Stdout), "uservice-discussions")
+	}
+
+	return monitor.NewConsoleGRPCLogger()
+}
+
 func main() {
-	log.Println("Starting server")
+	logger := getLogger()
+
+	logger.Info("Starting server")
 	db, closeDB, err := deploy.OpenDB(config.App.Postgres.DSN)
 	if err != nil {
-		log.Fatalf("failed to connect to database: %v", err)
+		logger.Fatal(err, "failed to connect to database")
 	}
 	defer closeDB()
 
-	log.Println("Running migrations")
+	logger.Info("Running migrations")
 	if err := migrations.Migrate(db); err != nil {
-		log.Fatalf("failed to migrate: %v", err)
+		logger.Fatal(err, "failed to migrate")
 	}
 
 	depCheck := deploy.DepsCheck{
@@ -57,16 +70,16 @@ func main() {
 	listDiscussionsByTeamService := services.NewListDiscussionsByTeamService(listDiscussionsByTeamDAO)
 	updateDiscussionReadStatusService := services.NewUpdateDiscussionReadStatusService(upsertDiscussionReadStatusDAO, getMessageDAO)
 
-	createMessageHandler := handlers.NewCreateMessageHandler(createMessageService)
-	deleteMessageHandler := handlers.NewDeleteMessageHandler(deleteMessageService)
-	getDiscussionReadStatusHandler := handlers.NewGetDiscussionReadStatusHandler(getDiscussionReadStatusService)
-	getMessageHandler := handlers.NewGetMessageHandler(getMessageService)
-	listDiscussionMessagesHandler := handlers.NewListDiscussionMessagesHandler(listDiscussionMessagesService)
-	listDiscussionsByTeamHandler := handlers.NewListDiscussionsByTeamHandler(listDiscussionsByTeamService)
-	updateDiscussionReadStatusHandler := handlers.NewUpdateDiscussionReadStatusHandler(updateDiscussionReadStatusService)
+	createMessageHandler := handlers.NewCreateMessageHandler(createMessageService, logger)
+	deleteMessageHandler := handlers.NewDeleteMessageHandler(deleteMessageService, logger)
+	getDiscussionReadStatusHandler := handlers.NewGetDiscussionReadStatusHandler(getDiscussionReadStatusService, logger)
+	getMessageHandler := handlers.NewGetMessageHandler(getMessageService, logger)
+	listDiscussionMessagesHandler := handlers.NewListDiscussionMessagesHandler(listDiscussionMessagesService, logger)
+	listDiscussionsByTeamHandler := handlers.NewListDiscussionsByTeamHandler(listDiscussionsByTeamService, logger)
+	updateDiscussionReadStatusHandler := handlers.NewUpdateDiscussionReadStatusHandler(updateDiscussionReadStatusService, logger)
 
-	log.Println("Starting to listen on port", config.App.Server.Port)
-	listener, server, health := deploy.StartGRPCServer(config.App.Server.Port, depCheck)
+	logger.Info(fmt.Sprintf("Starting to listen on port %v", config.App.Server.Port))
+	listener, server, health := deploy.StartGRPCServer(logger, config.App.Server.Port, depCheck)
 	defer deploy.CloseGRPCServer(listener, server)
 	go health()
 
@@ -78,8 +91,8 @@ func main() {
 	discussions_pb.RegisterListDiscussionsByTeamServer(server, listDiscussionsByTeamHandler)
 	discussions_pb.RegisterUpdateDiscussionReadStatusServer(server, updateDiscussionReadStatusHandler)
 
-	log.Println("Server started")
+	logger.Info("Server started")
 	if err := server.Serve(listener); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		logger.Fatal(err, "failed to serve")
 	}
 }

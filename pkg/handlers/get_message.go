@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"errors"
+	"github.com/in-rich/lib-go/monitor"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/pkg/dao"
 	"github.com/in-rich/uservice-discussions/pkg/models"
@@ -15,9 +16,10 @@ import (
 type GetMessageHandler struct {
 	discussions_pb.GetMessageServer
 	service services.GetMessageService
+	logger  monitor.GRPCLogger
 }
 
-func (h *GetMessageHandler) GetMessage(ctx context.Context, in *discussions_pb.GetMessageRequest) (*discussions_pb.Message, error) {
+func (h *GetMessageHandler) getMessage(ctx context.Context, in *discussions_pb.GetMessageRequest) (*discussions_pb.Message, error) {
 	message, err := h.service.Exec(ctx, &models.GetMessageRequest{ID: in.GetMessageId()})
 	if err != nil {
 		if errors.Is(err, services.ErrInvalidData) {
@@ -41,8 +43,15 @@ func (h *GetMessageHandler) GetMessage(ctx context.Context, in *discussions_pb.G
 	}, nil
 }
 
-func NewGetMessageHandler(service services.GetMessageService) *GetMessageHandler {
+func (h *GetMessageHandler) GetMessage(ctx context.Context, in *discussions_pb.GetMessageRequest) (*discussions_pb.Message, error) {
+	res, err := h.getMessage(ctx, in)
+	h.logger.Report(ctx, "GetMessage", err)
+	return res, err
+}
+
+func NewGetMessageHandler(service services.GetMessageService, logger monitor.GRPCLogger) *GetMessageHandler {
 	return &GetMessageHandler{
 		service: service,
+		logger:  logger,
 	}
 }

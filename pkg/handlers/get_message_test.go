@@ -3,6 +3,7 @@ package handlers_test
 import (
 	"context"
 	"errors"
+	"github.com/in-rich/lib-go/monitor"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/pkg/dao"
 	"github.com/in-rich/uservice-discussions/pkg/handlers"
@@ -85,7 +86,7 @@ func TestGetMessage(t *testing.T) {
 			service := servicesmocks.NewMockGetMessageService(t)
 			service.On("Exec", context.TODO(), mock.Anything).Return(tt.serviceResp, tt.serviceErr)
 
-			handler := handlers.NewGetMessageHandler(service)
+			handler := handlers.NewGetMessageHandler(service, monitor.NewDummyGRPCLogger())
 
 			resp, err := handler.GetMessage(context.TODO(), tt.in)
 

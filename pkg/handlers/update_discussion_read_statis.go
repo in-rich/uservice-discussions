@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"errors"
+	"github.com/in-rich/lib-go/monitor"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/pkg/dao"
 	"github.com/in-rich/uservice-discussions/pkg/models"
@@ -14,9 +15,10 @@ import (
 type UpdateDiscussionReadStatusHandler struct {
 	discussions_pb.UpdateDiscussionReadStatusServer
 	service services.UpdateDiscussionReadStatusService
+	logger  monitor.GRPCLogger
 }
 
-func (h *UpdateDiscussionReadStatusHandler) UpdateDiscussionReadStatus(ctx context.Context, in *discussions_pb.UpdateDiscussionReadStatusRequest) (*discussions_pb.DiscussionReadStatus, error) {
+func (h *UpdateDiscussionReadStatusHandler) updateDiscussionReadStatus(ctx context.Context, in *discussions_pb.UpdateDiscussionReadStatusRequest) (*discussions_pb.DiscussionReadStatus, error) {
 	readStatus, err := h.service.Exec(ctx, &models.UpdateDiscussionReadStatusRequest{
 		Target:           in.GetTarget(),
 		PublicIdentifier: in.GetPublicIdentifier(),
@@ -47,8 +49,15 @@ func (h *UpdateDiscussionReadStatusHandler) UpdateDiscussionReadStatus(ctx conte
 	}, nil
 }
 
-func NewUpdateDiscussionReadStatusHandler(service services.UpdateDiscussionReadStatusService) *UpdateDiscussionReadStatusHandler {
+func (h *UpdateDiscussionReadStatusHandler) UpdateDiscussionReadStatus(ctx context.Context, in *discussions_pb.UpdateDiscussionReadStatusRequest) (*discussions_pb.DiscussionReadStatus, error) {
+	res, err := h.updateDiscussionReadStatus(ctx, in)
+	h.logger.Report(ctx, "UpdateDiscussionReadStatus", err)
+	return res, err
+}
+
+func NewUpdateDiscussionReadStatusHandler(service services.UpdateDiscussionReadStatusService, logger monitor.GRPCLogger) *UpdateDiscussionReadStatusHandler {
 	return &UpdateDiscussionReadStatusHandler{
 		service: service,
+		logger:  logger,
 	}
 }

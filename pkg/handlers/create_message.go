@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"errors"
+	"github.com/in-rich/lib-go/monitor"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/pkg/models"
 	"github.com/in-rich/uservice-discussions/pkg/services"
@@ -15,9 +16,10 @@ import (
 type CreateMessageHandler struct {
 	discussions_pb.CreateMessageServer
 	service services.CreateMessageService
+	logger  monitor.GRPCLogger
 }
 
-func (h *CreateMessageHandler) CreateMessage(ctx context.Context, in *discussions_pb.CreateMessageRequest) (*discussions_pb.Message, error) {
+func (h *CreateMessageHandler) createMessage(ctx context.Context, in *discussions_pb.CreateMessageRequest) (*discussions_pb.Message, error) {
 	message, err := h.service.Exec(ctx, &models.CreateMessageRequest{
 		Target:           in.GetTarget(),
 		PublicIdentifier: in.GetPublicIdentifier(),
@@ -44,8 +46,15 @@ func (h *CreateMessageHandler) CreateMessage(ctx context.Context, in *discussion
 	}, nil
 }
 
-func NewCreateMessageHandler(service services.CreateMessageService) *CreateMessageHandler {
+func (h *CreateMessageHandler) CreateMessage(ctx context.Context, in *discussions_pb.CreateMessageRequest) (*discussions_pb.Message, error) {
+	res, err := h.createMessage(ctx, in)
+	h.logger.Report(ctx, "CreateMessage", err)
+	return res, err
+}
+
+func NewCreateMessageHandler(service services.CreateMessageService, logger monitor.GRPCLogger) *CreateMessageHandler {
 	return &CreateMessageHandler{
 		service: service,
+		logger:  logger,
 	}
 }
