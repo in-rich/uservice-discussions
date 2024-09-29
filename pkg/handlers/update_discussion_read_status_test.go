@@ -3,6 +3,7 @@ package handlers_test
 import (
 	"context"
 	"errors"
+	"github.com/in-rich/lib-go/monitor"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/pkg/dao"
 	"github.com/in-rich/uservice-discussions/pkg/handlers"
@@ -106,7 +107,7 @@ func TestUpdateDiscussionReadStatus(t *testing.T) {
 			service := servicesmocks.NewMockUpdateDiscussionReadStatusService(t)
 			service.On("Exec", context.TODO(), mock.Anything).Return(tt.serviceResp, tt.serviceErr)
 
-			handler := handlers.NewUpdateDiscussionReadStatusHandler(service)
+			handler := handlers.NewUpdateDiscussionReadStatusHandler(service, monitor.NewDummyGRPCLogger())
 
 			resp, err := handler.UpdateDiscussionReadStatus(context.TODO(), tt.in)
 

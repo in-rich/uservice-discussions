@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"errors"
+	"github.com/in-rich/lib-go/monitor"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/pkg/models"
 	"github.com/in-rich/uservice-discussions/pkg/services"
@@ -14,9 +15,10 @@ import (
 type ListDiscussionMessagesHandler struct {
 	discussions_pb.ListDiscussionMessagesServer
 	service services.ListDiscussionMessagesService
+	logger  monitor.GRPCLogger
 }
 
-func (h *ListDiscussionMessagesHandler) ListDiscussionMessages(ctx context.Context, in *discussions_pb.ListDiscussionMessagesRequest) (*discussions_pb.ListDiscussionMessagesResponse, error) {
+func (h *ListDiscussionMessagesHandler) listDiscussionMessages(ctx context.Context, in *discussions_pb.ListDiscussionMessagesRequest) (*discussions_pb.ListDiscussionMessagesResponse, error) {
 	messages, err := h.service.Exec(ctx, &models.ListDiscussionMessagesRequest{
 		Target:           in.GetTarget(),
 		PublicIdentifier: in.GetPublicIdentifier(),
@@ -50,8 +52,15 @@ func (h *ListDiscussionMessagesHandler) ListDiscussionMessages(ctx context.Conte
 	return response, nil
 }
 
-func NewListDiscussionMessagesHandler(service services.ListDiscussionMessagesService) *ListDiscussionMessagesHandler {
+func (h *ListDiscussionMessagesHandler) ListDiscussionMessages(ctx context.Context, in *discussions_pb.ListDiscussionMessagesRequest) (*discussions_pb.ListDiscussionMessagesResponse, error) {
+	res, err := h.listDiscussionMessages(ctx, in)
+	h.logger.Report(ctx, "ListDiscussionMessages", err)
+	return res, err
+}
+
+func NewListDiscussionMessagesHandler(service services.ListDiscussionMessagesService, logger monitor.GRPCLogger) *ListDiscussionMessagesHandler {
 	return &ListDiscussionMessagesHandler{
 		service: service,
+		logger:  logger,
 	}
 }

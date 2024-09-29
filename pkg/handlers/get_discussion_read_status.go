@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"errors"
+	"github.com/in-rich/lib-go/monitor"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/pkg/dao"
 	"github.com/in-rich/uservice-discussions/pkg/models"
@@ -14,9 +15,10 @@ import (
 type GetDiscussionReadStatusHandler struct {
 	discussions_pb.GetDiscussionReadStatusServer
 	service services.GetDiscussionReadStatusService
+	logger  monitor.GRPCLogger
 }
 
-func (h *GetDiscussionReadStatusHandler) GetDiscussionReadStatus(ctx context.Context, in *discussions_pb.GetDiscussionReadStatusRequest) (*discussions_pb.DiscussionReadStatus, error) {
+func (h *GetDiscussionReadStatusHandler) getDiscussionReadStatus(ctx context.Context, in *discussions_pb.GetDiscussionReadStatusRequest) (*discussions_pb.DiscussionReadStatus, error) {
 	readStatus, err := h.service.Exec(ctx, &models.GetDiscussionReadStatusRequest{
 		Target:           in.GetTarget(),
 		PublicIdentifier: in.GetPublicIdentifier(),
@@ -43,8 +45,15 @@ func (h *GetDiscussionReadStatusHandler) GetDiscussionReadStatus(ctx context.Con
 	}, nil
 }
 
-func NewGetDiscussionReadStatusHandler(service services.GetDiscussionReadStatusService) *GetDiscussionReadStatusHandler {
+func (h *GetDiscussionReadStatusHandler) GetDiscussionReadStatus(ctx context.Context, in *discussions_pb.GetDiscussionReadStatusRequest) (*discussions_pb.DiscussionReadStatus, error) {
+	res, err := h.getDiscussionReadStatus(ctx, in)
+	h.logger.Report(ctx, "GetDiscussionReadStatus", err)
+	return res, err
+}
+
+func NewGetDiscussionReadStatusHandler(service services.GetDiscussionReadStatusService, logger monitor.GRPCLogger) *GetDiscussionReadStatusHandler {
 	return &GetDiscussionReadStatusHandler{
 		service: service,
+		logger:  logger,
 	}
 }

@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"errors"
+	"github.com/in-rich/lib-go/monitor"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/pkg/models"
 	"github.com/in-rich/uservice-discussions/pkg/services"
@@ -14,9 +15,10 @@ import (
 type ListDiscussionsByTeamHandler struct {
 	discussions_pb.ListDiscussionsByTeamServer
 	service services.ListDiscussionsByTeamService
+	logger  monitor.GRPCLogger
 }
 
-func (h *ListDiscussionsByTeamHandler) ListDiscussionsByTeam(ctx context.Context, in *discussions_pb.ListDiscussionsByTeamRequest) (*discussions_pb.ListDiscussionsByTeamResponse, error) {
+func (h *ListDiscussionsByTeamHandler) listDiscussionsByTeam(ctx context.Context, in *discussions_pb.ListDiscussionsByTeamRequest) (*discussions_pb.ListDiscussionsByTeamResponse, error) {
 	discussions, err := h.service.Exec(ctx, &models.ListDiscussionsByTeamRequest{
 		TeamID: in.GetTeamId(),
 		Limit:  int(in.GetLimit()),
@@ -45,8 +47,15 @@ func (h *ListDiscussionsByTeamHandler) ListDiscussionsByTeam(ctx context.Context
 	}, nil
 }
 
-func NewListDiscussionsByTeamHandler(service services.ListDiscussionsByTeamService) *ListDiscussionsByTeamHandler {
+func (h *ListDiscussionsByTeamHandler) ListDiscussionsByTeam(ctx context.Context, in *discussions_pb.ListDiscussionsByTeamRequest) (*discussions_pb.ListDiscussionsByTeamResponse, error) {
+	res, err := h.listDiscussionsByTeam(ctx, in)
+	h.logger.Report(ctx, "ListDiscussionsByTeam", err)
+	return res, err
+}
+
+func NewListDiscussionsByTeamHandler(service services.ListDiscussionsByTeamService, logger monitor.GRPCLogger) *ListDiscussionsByTeamHandler {
 	return &ListDiscussionsByTeamHandler{
 		service: service,
+		logger:  logger,
 	}
 }

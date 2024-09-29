@@ -3,6 +3,7 @@ package handlers_test
 import (
 	"context"
 	"errors"
+	"github.com/in-rich/lib-go/monitor"
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/pkg/handlers"
 	"github.com/in-rich/uservice-discussions/pkg/services"
@@ -51,7 +52,7 @@ func TestDeleteMessage(t *testing.T) {
 			service := servicesmocks.NewMockDeleteMessageService(t)
 			service.On("Exec", context.TODO(), mock.Anything).Return(tt.serviceErr)
 
-			handler := handlers.NewDeleteMessageHandler(service)
+			handler := handlers.NewDeleteMessageHandler(service, monitor.NewDummyGRPCLogger())
 
 			_, err := handler.DeleteMessage(context.TODO(), tt.in)
 
