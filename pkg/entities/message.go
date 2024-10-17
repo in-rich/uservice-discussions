@@ -59,7 +59,7 @@ func (target Target) Value() (driver.Value, error) {
 type Message struct {
 	bun.BaseModel `bun:"table:messages"`
 
-	ID uuid.UUID `bun:"id,pk,type:uuid"`
+	ID *uuid.UUID `bun:"id,pk,type:uuid"`
 
 	AuthorID         string `bun:"author_id,notnull"`
 	TeamID           string `bun:"team_id,notnull"`

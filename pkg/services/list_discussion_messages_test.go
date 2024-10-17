@@ -38,7 +38,7 @@ func TestListDiscussionMessages(t *testing.T) {
 			shouldCallListDiscussionMessages: true,
 			listDiscussionMessagesResponse: []*entities.Message{
 				{
-					ID:               uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+					ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000002")),
 					AuthorID:         "author-id-2",
 					TeamID:           "team-id-1",
 					PublicIdentifier: "public-identifier-1",
@@ -47,7 +47,7 @@ func TestListDiscussionMessages(t *testing.T) {
 					CreatedAt:        lo.ToPtr(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
 				},
 				{
-					ID:               uuid.MustParse("00000000-0000-0000-0000-000000000003"),
+					ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000003")),
 					AuthorID:         "author-id-3",
 					TeamID:           "team-id-1",
 					PublicIdentifier: "public-identifier-1",
@@ -56,7 +56,7 @@ func TestListDiscussionMessages(t *testing.T) {
 					CreatedAt:        lo.ToPtr(time.Date(2021, 1, 2, 0, 0, 0, 0, time.UTC)),
 				},
 				{
-					ID:               uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+					ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 					AuthorID:         "author-id-1",
 					TeamID:           "team-id-1",
 					PublicIdentifier: "public-identifier-1",
