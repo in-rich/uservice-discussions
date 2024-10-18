@@ -14,7 +14,7 @@ import (
 var listDiscussionMessagesFixtures = []*entities.Message{
 	// Discussion about user public-identifier-1
 	{
-		ID:               uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+		ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 		AuthorID:         "author-id-1",
 		TeamID:           "team-id-1",
 		PublicIdentifier: "public-identifier-1",
@@ -23,7 +23,7 @@ var listDiscussionMessagesFixtures = []*entities.Message{
 		CreatedAt:        lo.ToPtr(time.Date(2021, 1, 3, 0, 0, 0, 0, time.UTC)),
 	},
 	{
-		ID:               uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+		ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000002")),
 		AuthorID:         "author-id-2",
 		TeamID:           "team-id-1",
 		PublicIdentifier: "public-identifier-1",
@@ -32,7 +32,7 @@ var listDiscussionMessagesFixtures = []*entities.Message{
 		CreatedAt:        lo.ToPtr(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
 	},
 	{
-		ID:               uuid.MustParse("00000000-0000-0000-0000-000000000003"),
+		ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000003")),
 		AuthorID:         "author-id-3",
 		TeamID:           "team-id-1",
 		PublicIdentifier: "public-identifier-1",
@@ -43,7 +43,7 @@ var listDiscussionMessagesFixtures = []*entities.Message{
 
 	// Discussion about user public-identifier-2
 	{
-		ID:               uuid.MustParse("00000000-0000-0000-0000-000000000004"),
+		ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000004")),
 		AuthorID:         "author-id-4",
 		TeamID:           "team-id-1",
 		PublicIdentifier: "public-identifier-2",
@@ -77,7 +77,7 @@ func TestListDiscussionMessages(t *testing.T) {
 			limit:            50,
 			expect: []*entities.Message{
 				{
-					ID:               uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+					ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000002")),
 					AuthorID:         "author-id-2",
 					TeamID:           "team-id-1",
 					PublicIdentifier: "public-identifier-1",
@@ -86,7 +86,7 @@ func TestListDiscussionMessages(t *testing.T) {
 					CreatedAt:        lo.ToPtr(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
 				},
 				{
-					ID:               uuid.MustParse("00000000-0000-0000-0000-000000000003"),
+					ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000003")),
 					AuthorID:         "author-id-3",
 					TeamID:           "team-id-1",
 					PublicIdentifier: "public-identifier-1",
@@ -95,7 +95,7 @@ func TestListDiscussionMessages(t *testing.T) {
 					CreatedAt:        lo.ToPtr(time.Date(2021, 1, 2, 0, 0, 0, 0, time.UTC)),
 				},
 				{
-					ID:               uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+					ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 					AuthorID:         "author-id-1",
 					TeamID:           "team-id-1",
 					PublicIdentifier: "public-identifier-1",
@@ -113,7 +113,7 @@ func TestListDiscussionMessages(t *testing.T) {
 			limit:            2,
 			expect: []*entities.Message{
 				{
-					ID:               uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+					ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000002")),
 					AuthorID:         "author-id-2",
 					TeamID:           "team-id-1",
 					PublicIdentifier: "public-identifier-1",
@@ -122,7 +122,7 @@ func TestListDiscussionMessages(t *testing.T) {
 					CreatedAt:        lo.ToPtr(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
 				},
 				{
-					ID:               uuid.MustParse("00000000-0000-0000-0000-000000000003"),
+					ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000003")),
 					AuthorID:         "author-id-3",
 					TeamID:           "team-id-1",
 					PublicIdentifier: "public-identifier-1",
@@ -141,7 +141,7 @@ func TestListDiscussionMessages(t *testing.T) {
 			offset:           1,
 			expect: []*entities.Message{
 				{
-					ID:               uuid.MustParse("00000000-0000-0000-0000-000000000003"),
+					ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000003")),
 					AuthorID:         "author-id-3",
 					TeamID:           "team-id-1",
 					PublicIdentifier: "public-identifier-1",
@@ -150,7 +150,7 @@ func TestListDiscussionMessages(t *testing.T) {
 					CreatedAt:        lo.ToPtr(time.Date(2021, 1, 2, 0, 0, 0, 0, time.UTC)),
 				},
 				{
-					ID:               uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+					ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 					AuthorID:         "author-id-1",
 					TeamID:           "team-id-1",
 					PublicIdentifier: "public-identifier-1",

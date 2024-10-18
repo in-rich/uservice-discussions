@@ -7,6 +7,7 @@ import (
 	"github.com/in-rich/uservice-discussions/pkg/entities"
 	"github.com/in-rich/uservice-discussions/pkg/models"
 	"github.com/in-rich/uservice-discussions/pkg/services"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -40,7 +41,7 @@ func TestUpdateDiscussionReadStatus(t *testing.T) {
 			},
 			shouldCallGetMessage: true,
 			getMessageResponse: &entities.Message{
-				ID:               uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 				AuthorID:         "author-id-1",
 				TeamID:           "team-id-1",
 				PublicIdentifier: "public-identifier-1",
@@ -73,7 +74,7 @@ func TestUpdateDiscussionReadStatus(t *testing.T) {
 			},
 			shouldCallGetMessage: true,
 			getMessageResponse: &entities.Message{
-				ID:               uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 				AuthorID:         "author-id-1",
 				TeamID:           "team-id-1",
 				PublicIdentifier: "public-identifier-1",
@@ -94,7 +95,7 @@ func TestUpdateDiscussionReadStatus(t *testing.T) {
 			},
 			shouldCallGetMessage: true,
 			getMessageResponse: &entities.Message{
-				ID:               uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 				AuthorID:         "author-id-1",
 				TeamID:           "team-id-2",
 				PublicIdentifier: "public-identifier-1",
@@ -113,7 +114,7 @@ func TestUpdateDiscussionReadStatus(t *testing.T) {
 			},
 			shouldCallGetMessage: true,
 			getMessageResponse: &entities.Message{
-				ID:               uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 				AuthorID:         "author-id-1",
 				TeamID:           "team-id-1",
 				PublicIdentifier: "public-identifier-2",
@@ -132,7 +133,7 @@ func TestUpdateDiscussionReadStatus(t *testing.T) {
 			},
 			shouldCallGetMessage: true,
 			getMessageResponse: &entities.Message{
-				ID:               uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 				AuthorID:         "author-id-1",
 				TeamID:           "team-id-1",
 				PublicIdentifier: "public-identifier-1",

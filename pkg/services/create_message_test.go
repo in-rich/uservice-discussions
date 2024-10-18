@@ -38,7 +38,7 @@ func TestCreateMessage(t *testing.T) {
 			},
 			shouldCallCreateMessage: true,
 			createMessageResponse: &entities.Message{
-				ID:               uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 				AuthorID:         "author-id-1",
 				TeamID:           "team-id-1",
 				Content:          "content-1",

@@ -14,7 +14,7 @@ import (
 var listDiscussionsByTeamFixtures = []*entities.Message{
 	// Discussion 1 of team 1.
 	{
-		ID:               uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+		ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000001")),
 		AuthorID:         "author-id-1",
 		TeamID:           "team-id-1",
 		PublicIdentifier: "public-identifier-1",
@@ -23,7 +23,7 @@ var listDiscussionsByTeamFixtures = []*entities.Message{
 		CreatedAt:        lo.ToPtr(time.Date(2021, 1, 3, 0, 0, 0, 0, time.UTC)),
 	},
 	{
-		ID:               uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+		ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000002")),
 		AuthorID:         "author-id-2",
 		TeamID:           "team-id-1",
 		PublicIdentifier: "public-identifier-1",
@@ -34,7 +34,7 @@ var listDiscussionsByTeamFixtures = []*entities.Message{
 
 	// Discussion 2 of team 1.
 	{
-		ID:               uuid.MustParse("00000000-0000-0000-0000-000000000003"),
+		ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000003")),
 		AuthorID:         "author-id-3",
 		TeamID:           "team-id-1",
 		PublicIdentifier: "public-identifier-2",
@@ -45,7 +45,7 @@ var listDiscussionsByTeamFixtures = []*entities.Message{
 
 	// Discussion 3 of team 1.
 	{
-		ID:               uuid.MustParse("00000000-0000-0000-0000-000000000004"),
+		ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000004")),
 		AuthorID:         "author-id-4",
 		TeamID:           "team-id-1",
 		PublicIdentifier: "public-identifier-3",
@@ -56,7 +56,7 @@ var listDiscussionsByTeamFixtures = []*entities.Message{
 
 	// Discussion 1 of team 2.
 	{
-		ID:               uuid.MustParse("00000000-0000-0000-0000-000000000005"),
+		ID:               lo.ToPtr(uuid.MustParse("00000000-0000-0000-0000-000000000005")),
 		AuthorID:         "author-id-5",
 		TeamID:           "team-id-2",
 		PublicIdentifier: "public-identifier-1",
