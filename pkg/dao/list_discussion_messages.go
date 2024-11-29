@@ -26,7 +26,7 @@ func (r *listDiscussionMessagesImpl) ListDiscussionMessages(
 		Where("team_id = ?", teamID).
 		Where("public_identifier = ?", publicIdentifier).
 		Where("target = ?", target).
-		Order("created_at ASC").
+		Order("created_at DESC").
 		Limit(limit).
 		Offset(offset).
 		Scan(ctx)

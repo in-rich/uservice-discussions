@@ -2,7 +2,6 @@ package dao
 
 import (
 	"context"
-	"fmt"
 	"github.com/in-rich/uservice-discussions/pkg/entities"
 	"github.com/uptrace/bun"
 )
@@ -33,8 +32,6 @@ func (r *listDiscussionsByTeamRepositoryImpl) ListDiscussionsByTeam(
 		Order("created_at DESC").
 		Limit(limit).
 		Offset(offset)
-
-	fmt.Println(query.String())
 
 	err := query.Scan(ctx)
 	if err != nil {
