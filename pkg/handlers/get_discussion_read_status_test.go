@@ -42,6 +42,7 @@ func TestGetDiscussionReadStatus(t *testing.T) {
 				TeamID:              "team-id-1",
 				LatestReadMessageID: "message-id-1",
 				UserID:              "user-id-1",
+				HasUnreadMessages:   true,
 			},
 			expect: &discussions_pb.DiscussionReadStatus{
 				Target:              "company",
@@ -49,6 +50,7 @@ func TestGetDiscussionReadStatus(t *testing.T) {
 				TeamId:              "team-id-1",
 				UserId:              "user-id-1",
 				LatestReadMessageId: "message-id-1",
+				HasUnreadMessages:   true,
 			},
 		},
 		{

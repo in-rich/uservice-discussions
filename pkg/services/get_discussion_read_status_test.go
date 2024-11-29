@@ -39,6 +39,7 @@ func TestGetDiscussionReadStatus(t *testing.T) {
 				Target:              entities.TargetCompany,
 				PublicIdentifier:    "public-identifier-1",
 				LatestReadMessageID: uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				HasUnreadMessages:   true,
 			},
 			expect: &models.DiscussionReadStatus{
 				TeamID:              "team-id-1",
@@ -46,6 +47,7 @@ func TestGetDiscussionReadStatus(t *testing.T) {
 				Target:              "company",
 				PublicIdentifier:    "public-identifier-1",
 				LatestReadMessageID: "00000000-0000-0000-0000-000000000001",
+				HasUnreadMessages:   true,
 			},
 		},
 		{

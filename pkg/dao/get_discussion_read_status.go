@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/in-rich/uservice-discussions/pkg/entities"
+	"github.com/samber/lo"
 	"github.com/uptrace/bun"
 )
 
@@ -22,7 +24,14 @@ func (r *getDiscussionReadStatusRepositoryImpl) GetDiscussionReadStatus(
 	ctx context.Context, teamID string, userID string, target entities.Target, publicIdentifier string,
 ) (*entities.ReadStatus, error) {
 	readStatus := new(entities.ReadStatus)
-	err := r.db.NewSelect().Model(readStatus).
+	mostRecentMessage := new(entities.Message)
+
+	err := mostRecentMessageForDiscussion(r.db, teamID).Column("id").Model(mostRecentMessage).Scan(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("get most recent message for discussion: %w", err)
+	}
+
+	err = r.db.NewSelect().Model(readStatus).
 		Where("team_id = ?", teamID).
 		Where("target = ?", target).
 		Where("public_identifier = ?", publicIdentifier).
@@ -34,9 +43,10 @@ func (r *getDiscussionReadStatusRepositoryImpl) GetDiscussionReadStatus(
 			return nil, ErrDiscussionReadStatusNotFound
 		}
 
-		return nil, err
+		return nil, fmt.Errorf("get discussion read status: %w", err)
 	}
 
+	readStatus.HasUnreadMessages = lo.FromPtr(mostRecentMessage.ID) != readStatus.LatestReadMessageID
 	return readStatus, nil
 }
 

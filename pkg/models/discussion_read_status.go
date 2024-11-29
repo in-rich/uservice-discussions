@@ -6,4 +6,5 @@ type DiscussionReadStatus struct {
 	TeamID              string `json:"teamID"`
 	LatestReadMessageID string `json:"latestReadMessageID"`
 	UserID              string `json:"userID"`
+	HasUnreadMessages   bool   `json:"hasUnreadMessages"`
 }
