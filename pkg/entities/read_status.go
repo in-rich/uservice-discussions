@@ -13,4 +13,6 @@ type ReadStatus struct {
 	TeamID              string    `bun:"team_id,notnull"`
 	UserID              string    `bun:"user_id,notnull"`
 	LatestReadMessageID uuid.UUID `bun:"latest_read_message_id"`
+
+	HasUnreadMessages bool `bun:"has_unread_messages,scanonly"`
 }

@@ -36,6 +36,7 @@ func (s *getDiscussionReadStatusServiceImpl) Exec(ctx context.Context, selector 
 		TeamID:              readStatus.TeamID,
 		LatestReadMessageID: readStatus.LatestReadMessageID.String(),
 		UserID:              readStatus.UserID,
+		HasUnreadMessages:   readStatus.HasUnreadMessages,
 	}, nil
 }
 

@@ -42,6 +42,7 @@ func (h *GetDiscussionReadStatusHandler) getDiscussionReadStatus(ctx context.Con
 		TeamId:              readStatus.TeamID,
 		UserId:              readStatus.UserID,
 		LatestReadMessageId: readStatus.LatestReadMessageID,
+		HasUnreadMessages:   readStatus.HasUnreadMessages,
 	}, nil
 }
 
