@@ -31,9 +31,10 @@ func (s *getAllMessagesServiceImpl) Exec(ctx context.Context, selector *models.G
 	for i, message := range messages {
 		result[i] = &models.Message{
 			ID:               message.ID.String(),
+			Target:           string(message.Target),
 			PublicIdentifier: message.PublicIdentifier,
 			AuthorID:         message.AuthorID,
-			Target:           string(message.Target),
+			TeamID:           message.TeamID,
 			Content:          message.Content,
 			CreatedAt:        message.CreatedAt,
 		}
