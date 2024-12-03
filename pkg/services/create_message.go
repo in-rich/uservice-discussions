@@ -27,6 +27,7 @@ func (s *createMessageServiceImpl) Exec(ctx context.Context, data *models.Create
 		Content:          data.Content,
 		PublicIdentifier: data.PublicIdentifier,
 		Target:           entities.Target(data.Target),
+		CreatedAt:        data.CreatedAt,
 	})
 	if err != nil {
 		return nil, err

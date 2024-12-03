@@ -4,12 +4,14 @@ import (
 	"context"
 	"github.com/in-rich/uservice-discussions/pkg/entities"
 	"github.com/uptrace/bun"
+	"time"
 )
 
 type CreateMessageData struct {
 	PublicIdentifier string
 	Target           entities.Target
 	Content          string
+	CreatedAt        *time.Time
 }
 
 type CreateMessageRepository interface {
@@ -27,6 +29,7 @@ func (r *createMessageRepositoryImpl) CreateMessage(ctx context.Context, authorI
 		PublicIdentifier: in.PublicIdentifier,
 		Target:           in.Target,
 		Content:          in.Content,
+		CreatedAt:        in.CreatedAt,
 	}
 
 	_, err := r.db.NewInsert().Model(message).Returning("*").Exec(ctx)

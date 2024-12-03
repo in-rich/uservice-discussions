@@ -51,6 +51,7 @@ func main() {
 			"ListDiscussionMessages":     {"Postgres"},
 			"ListDiscussionsByTeam":      {"Postgres"},
 			"UpdateDiscussionReadStatus": {"Postgres"},
+			"GetAllMessages":             {"Postgres"},
 		},
 	}
 
@@ -61,6 +62,7 @@ func main() {
 	listDiscussionMessagesDAO := dao.NewListDiscussionMessagesRepository(db)
 	listDiscussionsByTeamDAO := dao.NewListDiscussionsByTeamRepository(db)
 	upsertDiscussionReadStatusDAO := dao.NewUpsertDiscussionReadStatusRepository(db)
+	getAllMessagesDAO := dao.NewGetAllMessagesRepository(db)
 
 	createMessageService := services.NewCreateMessageService(createMessageDAO)
 	deleteMessageService := services.NewDeleteMessageService(deleteMessageDAO)
@@ -69,6 +71,7 @@ func main() {
 	listDiscussionMessagesService := services.NewListDiscussionMessagesService(listDiscussionMessagesDAO)
 	listDiscussionsByTeamService := services.NewListDiscussionsByTeamService(listDiscussionsByTeamDAO)
 	updateDiscussionReadStatusService := services.NewUpdateDiscussionReadStatusService(upsertDiscussionReadStatusDAO, getMessageDAO)
+	getAllMessagesService := services.NewGetAllMessagesService(getAllMessagesDAO)
 
 	createMessageHandler := handlers.NewCreateMessageHandler(createMessageService, logger)
 	deleteMessageHandler := handlers.NewDeleteMessageHandler(deleteMessageService, logger)
@@ -77,6 +80,7 @@ func main() {
 	listDiscussionMessagesHandler := handlers.NewListDiscussionMessagesHandler(listDiscussionMessagesService, logger)
 	listDiscussionsByTeamHandler := handlers.NewListDiscussionsByTeamHandler(listDiscussionsByTeamService, logger)
 	updateDiscussionReadStatusHandler := handlers.NewUpdateDiscussionReadStatusHandler(updateDiscussionReadStatusService, logger)
+	getAllMessagesHandler := handlers.NewGetAllMessagesHandler(getAllMessagesService, logger)
 
 	logger.Info(fmt.Sprintf("Starting to listen on port %v", config.App.Server.Port))
 	listener, server, health := deploy.StartGRPCServer(logger, config.App.Server.Port, depCheck)
@@ -90,6 +94,7 @@ func main() {
 	discussions_pb.RegisterListDiscussionMessagesServer(server, listDiscussionMessagesHandler)
 	discussions_pb.RegisterListDiscussionsByTeamServer(server, listDiscussionsByTeamHandler)
 	discussions_pb.RegisterUpdateDiscussionReadStatusServer(server, updateDiscussionReadStatusHandler)
+	discussions_pb.RegisterGetAllMessagesServer(server, getAllMessagesHandler)
 
 	logger.Info("Server started")
 	if err := server.Serve(listener); err != nil {

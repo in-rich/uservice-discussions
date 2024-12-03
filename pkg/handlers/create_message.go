@@ -7,10 +7,12 @@ import (
 	discussions_pb "github.com/in-rich/proto/proto-go/discussions"
 	"github.com/in-rich/uservice-discussions/pkg/models"
 	"github.com/in-rich/uservice-discussions/pkg/services"
+	"github.com/samber/lo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"strings"
+	"time"
 )
 
 type CreateMessageHandler struct {
@@ -26,6 +28,15 @@ func (h *CreateMessageHandler) createMessage(ctx context.Context, in *discussion
 		AuthorID:         in.GetAuthorId(),
 		TeamID:           in.GetTeamId(),
 		Content:          strings.TrimSpace(in.GetContent()),
+		CreatedAt: lo.TernaryF[*time.Time](
+			in.GetUpdatedAt() == nil,
+			func() *time.Time {
+				return nil
+			},
+			func() *time.Time {
+				return lo.ToPtr(in.GetUpdatedAt().AsTime())
+			},
+		),
 	})
 	if err != nil {
 		if errors.Is(err, services.ErrInvalidData) {
