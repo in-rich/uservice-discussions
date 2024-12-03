@@ -27,6 +27,8 @@ func TestCreateMessage(t *testing.T) {
 	db := OpenDB()
 	defer CloseDB(db)
 
+	testStart := time.Now()
+
 	testData := []struct {
 		name string
 
@@ -35,8 +37,9 @@ func TestCreateMessage(t *testing.T) {
 
 		data *dao.CreateMessageData
 
-		expect    *entities.Message
-		expectErr error
+		expect          *entities.Message
+		expectTimestamp *time.Time
+		expectErr       error
 	}{
 		{
 			name:     "CreateMessage/NewDiscussion",
@@ -72,6 +75,25 @@ func TestCreateMessage(t *testing.T) {
 				Content:          "content-1",
 			},
 		},
+		{
+			name:     "CreateMessage/WithTimestamp",
+			authorID: "author-id-2",
+			teamID:   "team-id-2",
+			data: &dao.CreateMessageData{
+				PublicIdentifier: "public-identifier-2",
+				Target:           entities.TargetUser,
+				Content:          "content-2",
+				CreatedAt:        lo.ToPtr(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
+			},
+			expectTimestamp: lo.ToPtr(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
+			expect: &entities.Message{
+				AuthorID:         "author-id-2",
+				TeamID:           "team-id-2",
+				PublicIdentifier: "public-identifier-2",
+				Target:           entities.TargetUser,
+				Content:          "content-2",
+			},
+		},
 	}
 
 	stx := BeginTX(db, createMessageFixtures)
@@ -89,6 +111,12 @@ func TestCreateMessage(t *testing.T) {
 			if message != nil {
 				require.NotNil(t, message.ID)
 				require.NotNil(t, message.CreatedAt)
+
+				if tt.expectTimestamp != nil {
+					require.Equal(t, tt.expectTimestamp, message.CreatedAt)
+				} else {
+					require.True(t, message.CreatedAt.After(testStart))
+				}
 
 				message.ID = nil
 				message.CreatedAt = nil
