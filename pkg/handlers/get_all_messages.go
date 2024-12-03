@@ -33,6 +33,7 @@ func (h *GetAllMessagesHandler) getAllMessages(ctx context.Context, in *discussi
 			AuthorId:         message.AuthorID,
 			Target:           message.Target,
 			Content:          message.Content,
+			TeamId:           message.TeamID,
 			CreatedAt:        timestamppb.New(*message.CreatedAt),
 		}
 	}
